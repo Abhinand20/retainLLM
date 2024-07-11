@@ -2,6 +2,8 @@
 """
 Extracts relevant sections, headers and content from research articles.
 TODO: Add support for figures.
+
+Adopted from - https://github.com/titipata/scipdf_parser.git
 """
 import re
 import os.path as op
@@ -161,7 +163,7 @@ def parse_sections(article, as_list: bool = False):
     Parse list of sections from a given BeautifulSoup of an article
 
     Parameters
-    ==========
+    =========
     as_list: bool, if True, output text as a list of paragraph instead
         of joining it together as one single text
     """
