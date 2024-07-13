@@ -3,6 +3,7 @@ import typer
 import os
 import os.path as osp
 from rich import print as rprint
+import utils
 from rich.table import Table
 from rich.console import Console
 from rich.markdown import Markdown
@@ -68,19 +69,19 @@ def summarize(pdf_path: str, section_start: int = 0, section_end: int = -1, mode
     if section_end == -1:
         section_end = max_sections 
     if section_end < section_start:
-        print_error("section-end cannot be greater than section-start")
+        utils.print_error("section-end cannot be greater than section-start")
         return
     if section_end > max_sections or section_start > max_sections:
-        print_error("section index cannot be greater than {}".format(max_sections))
+        utils.print_error("section index cannot be greater than {}".format(max_sections))
         return
     title = fulltext['title']
     sections = fulltext['sections']
     include_abstract = section_start == 0 and section_end == max_sections
-    print_info(
+    utils.print_info(
         "generating summary of paper titled '{}' using model [green]{}[/green] :fire:"
         .format(title, model.qualified_name)
         )
-    print_info("CONTENT_RANGE: [{}, {}]".format(
+    utils.print_info("CONTENT_RANGE: [{}, {}]".format(
         sections[section_start]['heading'],
         sections[section_end]['heading'],
         ))
@@ -94,7 +95,7 @@ def summarize(pdf_path: str, section_start: int = 0, section_end: int = -1, mode
     console.print(Markdown(resp["generated_text"].strip()))
     if save:
         out_dir = save_summary(OUT_DIR, resp['generated_text'].strip(), pdf_name, title)
-        print_info("saved summary in [green]{}[/green].".format(out_dir))
+        utils.print_info("saved summary in [green]{}[/green].".format(out_dir))
 
 if __name__ == "__main__":
     app()

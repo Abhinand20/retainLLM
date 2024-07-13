@@ -11,7 +11,7 @@ MODEL_TO_URL = {
 MODEL_TO_PROMPT = {
     "phi": "<|user|>\n{summary_prompt}\n{content}<|end|>\n<|assistant|>",
     "phi_lc": "<|user|>\n{summary_prompt}\n{content}<|end|>\n<|assistant|>",
-    "mistral": "[INST] {summary_prompt}\n\n{content} [/INST]"
+    "mistral": "[INST] {summary_prompt}\n\n[/INST]{content}"
 }
 API_PREFIX = "https://api-inference.huggingface.co/models/"
 
