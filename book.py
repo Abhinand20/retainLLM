@@ -6,7 +6,7 @@ from rich.table import Table
 from rich.console import Console
 from rich.markdown import Markdown
 from book_epub import BookEPUB
-from model import Model
+from model import model_factory
 import prompts
 import warnings
 warnings.filterwarnings('ignore')
@@ -46,10 +46,19 @@ def list_chapters(name: str):
         table.add_row(*row)
     console.print(table)
 
+
+@app.command()
+def get_content(name: str, start_chapter: int = 1):
+    book_path = get_book_path_from_name(name)
+    book_obj = BookEPUB(book_path)
+    content = book_obj.get_content(start_chapter)
+    print("CONTENT:\n{}".format(content.strip()))
+
+
 # TODO: 1) Support range, and output to markdown file, 2) Model choice
 @app.command()
-def summarize(name: str, start_chapter: int = 1, model_type: str = "mistral", save: bool = False):
-    model = Model(model_type)
+def summarize(name: str, start_chapter: int = 1, model_type: str = "gemini", save: bool = False):
+    model = model_factory(model_type, prompts.BOOK_SUMMARY_PROMPT)
     book_path = get_book_path_from_name(name)
     book_obj = BookEPUB(book_path)
     title = book_obj.get_chapter_title_from_index(start_chapter)
@@ -58,10 +67,10 @@ def summarize(name: str, start_chapter: int = 1, model_type: str = "mistral", sa
         .format(title, model.qualified_name)
         )
     content = book_obj.get_content(start_chapter)
-    resp = model.query(content, prompts.BOOK_SUMMARY_PROMPT)
-    console.print(Markdown(resp["generated_text"].strip()))
+    resp = model.query(content) 
+    console.print(Markdown(resp.strip()))
     if save:
-        out_dir = save_summary(resp['generated_text'].strip(), name, title)
+        out_dir = save_summary(resp.strip(), name, title)
         print_info("saved summary in [green]{}[/green].".format(out_dir))
 
 

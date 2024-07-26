@@ -8,7 +8,7 @@ from rich.table import Table
 from rich.console import Console
 from rich.markdown import Markdown
 from book_epub import BookEPUB
-from model import Model
+from model import model_factory
 import prompts
 import warnings
 import pdfparser
@@ -61,8 +61,8 @@ TODO:
     2. Add support for parsing images/tables for the LLM input.
 """
 @app.command()
-def summarize(pdf_path: str, section_start: int = 0, section_end: int = -1, model_type: str = "mistral", save: bool = False):
-    model = Model(model_type)
+def summarize(pdf_path: str, section_start: int = 0, section_end: int = -1, model_type: str = "gemini", save: bool = False):
+    model = model_factory(model_type, prompts.PAPER_SUMMARY_PROMPT)
     pdf_name = pdf_path.split(osp.sep)[-1]
     fulltext = pdfparser.parse_pdf_to_dict(pdf_path)
     max_sections = len(fulltext['sections']) - 1
@@ -91,10 +91,10 @@ def summarize(pdf_path: str, section_start: int = 0, section_end: int = -1, mode
         fulltext['abstract'] if include_abstract else None
     )
     print(content)
-    resp = model.query(content, prompts.PAPER_SUMMARY_PROMPT)
-    console.print(Markdown(resp["generated_text"].strip()))
+    resp = model.query(content)
+    console.print(Markdown(resp.strip()))
     if save:
-        out_dir = save_summary(OUT_DIR, resp['generated_text'].strip(), pdf_name, title)
+        out_dir = save_summary(OUT_DIR, resp.strip(), pdf_name, title)
         utils.print_info("saved summary in [green]{}[/green].".format(out_dir))
 
 if __name__ == "__main__":

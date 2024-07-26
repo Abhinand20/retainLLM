@@ -58,7 +58,6 @@ class BookEPUB(Book):
             return None
         if '#' in src:
             return self._get_content_between_files(src, index)
-        # print(content_src)
         contentObj = self._book.get_item_with_href(src) 
         content = bs4.BeautifulSoup(contentObj.get_content())
         return content.get_text()
