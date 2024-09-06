@@ -36,7 +36,7 @@ class GeminiModel(BaseModel):
     def __init__(self, name: str, system_prompt: str | None):
         super().__init__(name=name, system_prompt=system_prompt)
         genai.configure(api_key=self.api_token)
-        self.qualified_name="gemini-1.5-flash"
+        self.qualified_name="gemini-1.5-pro"
         self.model = genai.GenerativeModel(
             model_name=self.qualified_name,
             generation_config=self._generation_config,
