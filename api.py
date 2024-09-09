@@ -1,8 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import os
+from model import model_factory
 from book_epub import BookEPUB
 import os.path as osp
+import prompts
 
 
 app = FastAPI()
@@ -53,3 +55,19 @@ def list_chapters(book_id: int = 1):
     for idx,title in toc:
         chapters.append({"id":idx, "title":title})
     return chapters
+
+
+@app.get("/book/summary/v1")
+def summarize(book_id: int, chapter_ids: str, model_type: str = "gemini"):
+    if book_id not in BOOK_ID_MAP:
+        raise HTTPException(404, detail="Could not find the requested book.")
+    ch_ids = chapter_ids.split(",")
+    book_name = BOOK_ID_MAP[book_id] 
+    start_chapter = int(ch_ids[0])
+    model = model_factory(model_type, prompts.BOOK_SUMMARY_PROMPT)
+    book_path = get_book_path_from_name(book_name)
+    book_obj = BookEPUB(book_path)
+    title = book_obj.get_chapter_title_from_index(start_chapter)
+    content = book_obj.get_content(start_chapter)
+    resp = model.query(content) 
+    return {"summary":resp}
