@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const CHAPTERS_PER_PAGE = 50;
+const CHAPTERS_PER_PAGE = 30;
 
 const SummaryApp = () => {
   const [epubFiles, setEpubFiles] = useState([]);
