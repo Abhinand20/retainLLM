@@ -28,7 +28,6 @@ const SummaryApp = () => {
   const fetchEpubFiles = async () => {
     setIsLoading(true);
     try {
-      // Replace this with actual API call
       const response = await fetch("/book/list");
       if (!response.ok) throw new Error("Failed to fetch list of books");
       const data = await response.json();
@@ -45,7 +44,9 @@ const SummaryApp = () => {
     setIsLoading(true);
     try {
       // Replace this with actual API call
-      const response = await fetch(`/api/chapters?file=${selectedEpub}`);
+      const response = await fetch(
+        `/book/chapter/list?book_id=${selectedEpub}`
+      );
       const data = await response.json();
       setChapters(data);
     } catch (error) {
@@ -130,6 +131,13 @@ const SummaryApp = () => {
                   List Chapters
                 </Button>
 
+                <Button
+                  onClick={generateEpubSummary}
+                  disabled={selectedChapters.length === 0 || isLoading}
+                >
+                  Generate ePub Summary
+                </Button>
+
                 {chapters.length > 0 && (
                   <div>
                     <h3 className="font-semibold mb-2">Select chapters:</h3>
@@ -157,13 +165,6 @@ const SummaryApp = () => {
                     ))}
                   </div>
                 )}
-
-                <Button
-                  onClick={generateEpubSummary}
-                  disabled={selectedChapters.length === 0 || isLoading}
-                >
-                  Generate ePub Summary
-                </Button>
               </div>
             </TabsContent>
 
