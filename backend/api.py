@@ -1,10 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from youtube_transcript_api import YouTubeTranscriptApi
 import os
 from model import model_factory
 from book_epub import BookEPUB
 import os.path as osp
 import prompts
+from podcast import process_transcript, extract_video_id
 
 
 app = FastAPI()
@@ -58,7 +60,7 @@ def list_chapters(book_id: int = 1):
 
 
 @app.get("/book/summary/v1")
-def summarize(book_id: int, chapter_ids: str, model_type: str = "gemini"):
+def summarize_chapter(book_id: int, chapter_ids: str, model_type: str = "gemini"):
     if book_id not in BOOK_ID_MAP:
         raise HTTPException(404, detail="Could not find the requested book.")
     ch_ids = chapter_ids.split(",")
@@ -69,5 +71,17 @@ def summarize(book_id: int, chapter_ids: str, model_type: str = "gemini"):
     book_obj = BookEPUB(book_path)
     title = book_obj.get_chapter_title_from_index(start_chapter)
     content = book_obj.get_content(start_chapter)
+    resp = model.query(content) 
+    return {"summary":resp}
+
+@app.get("/podcast/summary/v1")
+def summarize_podcast(yt_video_link: str, model_type: str = "gemini"):
+    video_id = extract_video_id(yt_video_link)
+    model = model_factory(model_type, prompts.PODCAST_SUMMARY_PROMPT)
+    try:
+        transcript = YouTubeTranscriptApi.get_transcript(video_id)
+    except Exception as e:
+        raise HTTPException(404, detail="Could not fetch YT transcript.")
+    content = process_transcript(transcript)
     resp = model.query(content) 
     return {"summary":resp}

@@ -1,14 +1,8 @@
 from youtube_transcript_api import YouTubeTranscriptApi
 import utils
-import json
 import typer
-import os
-import os.path as osp
-from rich import print as rprint
-from rich.table import Table
 from rich.console import Console
 from rich.markdown import Markdown
-from book_epub import BookEPUB
 from model import model_factory
 import prompts
 import warnings

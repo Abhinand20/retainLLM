@@ -59,7 +59,6 @@ const SummaryApp = () => {
     if (!selectedEpub) return;
     setIsLoading(true);
     try {
-      // Replace this with actual API call
       const response = await fetch(
         `/book/chapter/list?book_id=${selectedEpub}`
       );
@@ -76,9 +75,8 @@ const SummaryApp = () => {
     if (selectedChapters.length === 0) return;
     setIsLoading(true);
     try {
-      // Replace this with actual API call
       const response = await fetch(
-        `book/summary/v1?book_id=${selectedEpub}&chapter_ids=${selectedChapters}`
+        `/book/summary/v1?book_id=${selectedEpub}&chapter_ids=${selectedChapters}`
       );
       const data = await response.json();
       setSummary(data.summary);
@@ -92,16 +90,13 @@ const SummaryApp = () => {
     if (!youtubeUrl) return;
     setIsLoading(true);
     try {
-      // Replace this with actual API call
-      const response = await fetch("/api/youtube-summary", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: youtubeUrl }),
-      });
+      const response = await fetch(
+        `/podcast/summary/v1?yt_video_link=${youtubeUrl}`
+      );
       const data = await response.json();
       setSummary(data.summary);
     } catch (error) {
-      console.error("Error generating YouTube summary:", error);
+      console.error("Error generating podcast summary:", error);
     }
     setIsLoading(false);
   };
